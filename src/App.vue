@@ -1,30 +1,42 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <nav class="barra-navegacao">
+    <div class="secoes">
+      <router-link class="link-menu" to="/">Home</router-link>
+      <div class="secao-movimentacoes">
+        <div>
+          Movimentações
+        </div>
+        <router-link class="link-menu" to="/entradas">Entradas</router-link> |
+        <router-link class="link-menu" to="/saidas">Saidas</router-link>
+      </div>
+    </div>
+
   </nav>
   <router-view/>
 </template>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+nav{
+  position: absolute;
+  //width: 20%;
+  width: 275px;
+  background-color: #bebebe;
+  height: 100%;
+}
+.link-menu{
+  text-decoration: none;
+  color: inherit;
+}
+.secoes{
+  width: 100%;
+  left: 50%;
 }
 
-nav {
-  padding: 30px;
+.barra-navegacao{
+
 }
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
+
+<script>
+</script>
