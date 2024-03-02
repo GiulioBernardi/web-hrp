@@ -12,7 +12,14 @@
                v-model="dataSaidaFiltro"
                input-label="Data"/>
 
+    <button @click="toggleModal">Adicionar Saida</button>
+    <ModalAdicionarEntrada :inclusao="'saida'"
+                           @fecharModal="toggleModal"
+                           @salvarModal="salvarSaida"
+                           :modalAberto="modalAberto"/>
+
     <ButtonBuscar @click="buscar"/>
+    <h3 v-show="saidas.length == 0">Não há informações</h3>
     <table v-show="saidas.length > 0" class="grid-saidas">
       <thead >
       <th class="grid-head-saidas" v-for="coluna in colunas">{{coluna.campo}}</th>
@@ -31,9 +38,11 @@
 import BaseInput from '../components/BaseInput.vue'
 import ButtonBuscar from "@/components/ButtonBuscar.vue";
 import axios from "axios";
+import ModalAdicionarEntrada from "@/components/ModalAdicionarMovimentacao.vue";
 export default {
   name: 'saidasView',
   components:{
+    ModalAdicionarEntrada,
     BaseInput,
     ButtonBuscar
   },
@@ -43,17 +52,23 @@ export default {
       valorSaidaFiltro: null,
       descricaoSaidaFiltro: null,
       dataSaidaFiltro: null,
-      saidas: []
+      saidas: [],
+      modalAberto: false,
     }
   },
   methods:{
     formatarData(data){
-      //esse metodo é util
-      //todo colocar esse método em uma classe geral para visualização de todos os arqvs
       var dia = data.substring(8,10)
       var mes = data.substring(5,7)
       var ano = data.substring(0,4)
       return dia+'/'+mes+'/'+ano;
+    },
+    salvarSaida(adicionarSaidaForm){
+      axios.post(this.baseUrl + '/adicionar-saida', adicionarSaidaForm)
+          .then(function (response) {
+          })
+      this.buscar();
+      this.modalAberto = false;
     },
     buscar(){
       var saidaFilter;
@@ -66,6 +81,9 @@ export default {
       }).catch(erro => {
         console.log(erro.message);
       })
+    },
+    toggleModal(){
+      this.modalAberto = !this.modalAberto;
     }
   }
 }

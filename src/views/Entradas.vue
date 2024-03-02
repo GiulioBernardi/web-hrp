@@ -39,7 +39,7 @@
 import axios from 'axios';
 import ButtonBuscar from "@/components/ButtonBuscar.vue";
 import BaseInput from "@/components/BaseInput.vue";
-import ModalAdicionarEntrada from "@/components/ModalAdicionarEntrada.vue";
+import ModalAdicionarEntrada from "@/components/ModalAdicionarMovimentacao.vue";
   export default {
     name: 'entradasView',
     components: {BaseInput, ButtonBuscar, ModalAdicionarEntrada},
