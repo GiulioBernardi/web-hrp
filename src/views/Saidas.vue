@@ -48,7 +48,7 @@ export default {
   },
   data(){
     return {
-      baseUrl: 'http://localhost:8080/gasto',
+      baseUrl: 'http://localhost:8080/saida',
       valorSaidaFiltro: null,
       descricaoSaidaFiltro: null,
       dataSaidaFiltro: null,

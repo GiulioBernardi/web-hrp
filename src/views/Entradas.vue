@@ -25,11 +25,16 @@
     <table v-show="entradas.length > 0" class="grid-entradas">
       <thead >
         <th class="grid-head-entradas" v-for="coluna in colunas">{{coluna.campo}}</th>
+        <th class="grid-head-entradas">Ações</th>
+        <th class="grid-head-entradas">Ações</th>
       </thead>
       <tr v-for="entrada in entradas">
+        <td hidden>{{entrada.entradaId}}</td>
         <td class="grid-linha-entradas">R$ {{entrada.valor}}</td>
         <td class="grid-linha-entradas">{{entrada.descricao}}</td>
         <td class="grid-linha-entradas">{{entrada.data}}</td>
+        <td class="action excluir"><font-awesome-icon icon="edit"/></td>
+        <td class="action excluir"><font-awesome-icon icon="trash"/></td>
       </tr>
     </table>
   </div>
@@ -40,9 +45,10 @@ import axios from 'axios';
 import ButtonBuscar from "@/components/ButtonBuscar.vue";
 import BaseInput from "@/components/BaseInput.vue";
 import ModalAdicionarEntrada from "@/components/ModalAdicionarMovimentacao.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
   export default {
     name: 'entradasView',
-    components: {BaseInput, ButtonBuscar, ModalAdicionarEntrada},
+    components: {BaseInput, ButtonBuscar, ModalAdicionarEntrada, FontAwesomeIcon},
     data(){
       return {
         baseUrl: 'http://localhost:8080/entrada',
