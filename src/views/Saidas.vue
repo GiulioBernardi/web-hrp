@@ -16,7 +16,11 @@
     <ModalAdicionarEntrada :inclusao="'saida'"
                            @fecharModal="toggleModal"
                            @salvarModal="salvarSaida"
-                           :modalAberto="modalAberto"/>
+                           :modalAberto="modalAberto"
+                           :id-editar="this.idEditar"
+                           :valor-editar="this.valorEditar"
+                           :descricao-editar="this.descricaoEditar"
+                           :data-editar="this.dataEditar"/>
 
     <ButtonBuscar @click="buscar"/>
     <h3 v-show="saidas.length == 0">Não há informações</h3>
@@ -25,9 +29,12 @@
       <th class="grid-head-saidas" v-for="coluna in colunas">{{coluna.campo}}</th>
       </thead>
       <tr v-for="saida in saidas">
+        <td hidden>{{saida.saidaId}}</td>
         <td class="grid-linha-saidas">R$ {{saida.valor}}</td>
         <td class="grid-linha-saidas">{{saida.descricao}}</td>
         <td class="grid-linha-saidas">{{saida.data}}</td>
+        <td class="action excluir"><font-awesome-icon @click="editar(saida.saidaId, saida.valor, saida.descricao, saida.data)" icon="edit"/></td>
+        <td class="action excluir"><font-awesome-icon @click="excluir(saida.saidaId)" icon="trash"/></td>
       </tr>
     </table>
   </div>
@@ -39,12 +46,14 @@ import BaseInput from '../components/BaseInput.vue'
 import ButtonBuscar from "@/components/ButtonBuscar.vue";
 import axios from "axios";
 import ModalAdicionarEntrada from "@/components/ModalAdicionarMovimentacao.vue";
+import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 export default {
   name: 'saidasView',
   components:{
     ModalAdicionarEntrada,
     BaseInput,
-    ButtonBuscar
+    ButtonBuscar,
+    FontAwesomeIcon
   },
   data(){
     return {
@@ -57,6 +66,24 @@ export default {
     }
   },
   methods:{
+
+    editar(saidaId, valor, descricao, data){
+      console.log('saaasas ', saidaId )
+      this.idEditar = Number(saidaId);
+      this.valorEditar = Number(valor);
+      this.descricaoEditar = String(descricao);
+      var dateParts = data.split("/");
+      var dateObject = +dateParts[2] + dateParts[1] - 1 + +dateParts[0];
+      this.dataEditar = (dateObject);
+      this.toggleModal();
+    },
+    excluir(saidaId){
+      axios.delete(this.baseUrl + '/excluir/' + saidaId)
+          .then(resposta => {
+            console.log('Entrada removida com sucesso');
+            this.buscar(true);
+          })
+    },
     formatarData(data){
       var dia = data.substring(8,10)
       var mes = data.substring(5,7)
@@ -64,9 +91,21 @@ export default {
       return dia+'/'+mes+'/'+ano;
     },
     salvarSaida(adicionarSaidaForm){
-      axios.post(this.baseUrl + '/adicionar-saida', adicionarSaidaForm)
-          .then(function (response) {
-          })
+      if(adicionarSaidaForm.editou === false){
+        axios.post(this.baseUrl + '/adicionar-saida', adicionarSaidaForm)
+            .then(function (response) {
+        })
+      }else if(adicionarSaidaForm.editou === true) {
+        var adicionarSaidaFormEdicao = {
+          saidaId: adicionarSaidaForm.id,
+          valor: adicionarSaidaForm.valor,
+          descricao: adicionarSaidaForm.descricao,
+          data: adicionarSaidaForm.data
+        }
+        console.log(adicionarSaidaFormEdicao);
+        axios.put(this.baseUrl + '/editar', adicionarSaidaFormEdicao)
+            .then(resposta => alert('Entrada atualizada com sucesso'));
+      }
       this.buscar();
       this.modalAberto = false;
     },

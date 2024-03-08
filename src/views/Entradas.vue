@@ -81,13 +81,10 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
       },
       salvarEntrada(adicionarEntradaForm){
         if(adicionarEntradaForm.editou === false){
-          console.log('caiu no adicionar');
           axios.post(this.baseUrl + '/adicionar-entrada', adicionarEntradaForm)
               .then(function (response) {
               })
         }else if(adicionarEntradaForm.editou === true) {
-          console.log('caiu no editar');
-          console.log('entradaId: ' + adicionarEntradaForm.id);
           var adicionarEntradaFormEdicao = {
             entradaId: adicionarEntradaForm.id,
             valor: adicionarEntradaForm.valor,

@@ -111,6 +111,7 @@ export default {
       this.limpaErros();
       this.validarDados(editar);
 
+      console.log('editar: ', editar);
       if(editar){
         console.log('erros' + this.erros);
         naoTemErros = this.erros.length === 0
