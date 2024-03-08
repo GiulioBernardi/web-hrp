@@ -9,17 +9,36 @@
           <slot/>
           <h3 class="header-modal">Incluir {{ inclusao }}</h3>
           <form class="form-inputs">
-            <BaseInput tipoInput="number"
+            <BaseInput
+                       tipoInput="number"
                        v-model="valor"
                        inputLabel="Valor"/>
+<!--            <BaseInput v-else-if="valorEditar != null"-->
+<!--                       tipoInput="number"-->
+<!--                       :model-value="valorEditar"-->
+<!--                       :value="valor"-->
+<!--                       inputLabel="Valore"/>-->
 
-            <BaseInput tipoInput="text"
+            <BaseInput
+                       tipoInput="text"
                        v-model="descricao"
                        inputLabel="Descricao"/>
 
-            <BaseInput tipo-input="date"
+<!--            <BaseInput v-else-if="descricaoEditar != null"-->
+<!--                       tipoInput="text"-->
+<!--                       :model-value="descricaoEditar"-->
+<!--                       inputLabel="Descricaoe"/>-->
+
+            <BaseInput
+                       tipo-input="date"
                        v-model="data"
                        input-label="Data"/>
+<!--            <BaseInput v-else-if="dataEditar != null"-->
+<!--                       tipo-input="date"-->
+<!--                       :model-value="dataEditar"-->
+<!--                       :value="data"-->
+<!--                       input-label="Datae"/>-->
+
           </form>
 
           <div class="botoes-acoes">
@@ -39,12 +58,17 @@ import BaseInput from '@/components/BaseInput.vue'
 export default {
   props: {
     modalAberto: Boolean,
-    inclusao: {String, default: ''}
+    inclusao: {String, default: ''},
+    idEditar: Number,
+    valorEditar: Number,
+    descricaoEditar: String,
+    dataEditar: String
   },
   components: {BaseInput},
   emits: ['fecharModal', 'salvarModal'],
   data(){
     return{
+      id: null,
       valor: null,
       descricao: null,
       data: null,
@@ -53,32 +77,74 @@ export default {
   },
   methods:{
 
-    validarDados(){
-      console.log(this.valor)
-      if(this.valor == null || this.valor == ""){
-        this.erros.push("O valor da " + this.inclusao + " deve ser informado");
-      }else if(this.valor.length > 9){
-        this.erros.push("O valor da " + this.inclusao + " não pode ser maior do que 1.000.000");
+    validarDados(editar){
+      if(editar){
+        if(this.valorEditar == null || this.valorEditar === ""){
+          this.erros.push("O valor da " + this.inclusao + " deve ser informado");
+        }else if(this.valorEditar.length > 9){
+          this.erros.push("O valor da " + this.inclusao + " não pode ser maior do que 1.000.000");
+        }
+        setTimeout(() => {
+          this.limpaErros();
+        }, 4000)
+      }else{
+        if(this.valor == null || this.valor === ""){
+          this.erros.push("O valor da " + this.inclusao + " deve ser informado");
+        }else if(this.valor.length > 9){
+          this.erros.push("O valor da " + this.inclusao + " não pode ser maior do que 1.000.000");
+        }
+        setTimeout(() => {
+          this.limpaErros();
+        }, 4000)
       }
-      setTimeout(() => {
-        this.limpaErros();
-      }, 4000)
+
 
     },
     salvarModal(){
+      var editar;
+      var naoTemErros;
+
+      if(this.$props.idEditar != null){
+        editar = true;
+      }
+
       this.limpaErros();
-      this.validarDados();
-      var naoTemErros = this.erros.length == 0
-      if(naoTemErros){
-        var obj = {
-          valor:this.valor
+      this.validarDados(editar);
+
+      if(editar){
+        console.log('erros' + this.erros);
+        naoTemErros = this.erros.length === 0
+        if(naoTemErros){
+          var obj = {
+            valor:this.valor
+          }
+        }
+        console.log(this.idEditar, this.valorEditar, this.descricaoEditar, this.dataEditar);
+        this.$emit('salvarModal', {
+          id: this.idEditar,
+          valor: this.valor,
+          descricao: this.descricao,
+          data: this.data,
+          editou: editar
+        })
+      }else{
+        naoTemErros = this.erros.length === 0
+        if(naoTemErros){
+          var obj = {
+            valor:this.valor
+          }
         }
         this.$emit('salvarModal', {
           valor: this.valor,
           descricao: this.descricao,
-          data: this.data
+          data: this.data,
+          editou: false
         })
+
+
       }
+
+
       this.limpaCampos();
 
     },

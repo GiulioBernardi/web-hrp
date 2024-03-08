@@ -18,7 +18,11 @@
     <ModalAdicionarEntrada :inclusao="'entrada'"
                            @fecharModal="toggleModal"
                            @salvarModal="salvarEntrada"
-                           :modalAberto="modalAberto"/>
+                           :modalAberto="modalAberto"
+                           :id-editar="this.idEditar"
+                           :valor-editar="this.valorEditar"
+                           :descricao-editar="this.descricaoEditar"
+                           :data-editar="this.dataEditar"/>
 
     <ButtonBuscar @click="buscar(false)" />
     <h3 v-show="entradas.length == 0">Não há informações</h3>
@@ -33,8 +37,8 @@
         <td class="grid-linha-entradas">R$ {{entrada.valor}}</td>
         <td class="grid-linha-entradas">{{entrada.descricao}}</td>
         <td class="grid-linha-entradas">{{entrada.data}}</td>
-        <td class="action excluir"><font-awesome-icon icon="edit"/></td>
-        <td class="action excluir"><font-awesome-icon icon="trash"/></td>
+        <td class="action excluir"><font-awesome-icon @click="editar(entrada.entradaId, entrada.valor, entrada.descricao, entrada.data)" icon="edit"/></td>
+        <td class="action excluir"><font-awesome-icon @click="excluir(entrada.entradaId)" icon="trash"/></td>
       </tr>
     </table>
   </div>
@@ -62,6 +66,10 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
           { campo: "Data" }
         ],
         modalAberto: false,
+        idEditar: '',
+        valorEditar: '',
+        descricaoEditar: '',
+        dataEditar: new Date()
       }
     },
     methods:{
@@ -72,11 +80,24 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
         return dia+'/'+mes+'/'+ano;
       },
       salvarEntrada(adicionarEntradaForm){
-        axios.post(this.baseUrl + '/adicionar-entrada', adicionarEntradaForm)
-            .then(function (response) {
-        })
-        console.log('to aq')
-        debugger;
+        if(adicionarEntradaForm.editou === false){
+          console.log('caiu no adicionar');
+          axios.post(this.baseUrl + '/adicionar-entrada', adicionarEntradaForm)
+              .then(function (response) {
+              })
+        }else if(adicionarEntradaForm.editou === true) {
+          console.log('caiu no editar');
+          console.log('entradaId: ' + adicionarEntradaForm.id);
+          var adicionarEntradaFormEdicao = {
+            entradaId: adicionarEntradaForm.id,
+            valor: adicionarEntradaForm.valor,
+            descricao: adicionarEntradaForm.descricao,
+            data: adicionarEntradaForm.data
+          }
+          console.log(adicionarEntradaFormEdicao);
+          axios.put(this.baseUrl + '/editar', adicionarEntradaFormEdicao)
+              .then(resposta => alert('Entrada atualizada com sucesso'));
+        }
         this.buscar(true);
         this.modalAberto = false;
       },
@@ -101,6 +122,22 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
       },
       toggleModal(){
         this.modalAberto = !this.modalAberto;
+      },
+      editar(entradaId, valor, descricao, data){
+        this.idEditar = Number(entradaId);
+        this.valorEditar = Number(valor);
+        this.descricaoEditar = String(descricao);
+        var dateParts = data.split("/");
+        var dateObject = +dateParts[2] + dateParts[1] - 1 + +dateParts[0];
+        this.dataEditar = (dateObject);
+        this.toggleModal();
+      },
+      excluir(entradaId){
+        axios.delete(this.baseUrl + '/excluir/' + entradaId)
+            .then(resposta => {
+                console.log('Entrada removida com sucesso');
+                this.buscar(true);
+            })
       }
     }
 
